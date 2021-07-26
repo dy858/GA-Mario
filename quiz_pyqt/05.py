@@ -32,7 +32,8 @@ class MyApp(QWidget):
         i = 0
         self.label.setText(str(i))
 
-        print('timer')
+
+        print(int(i + 1))
 
 
 
