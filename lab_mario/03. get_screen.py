@@ -68,18 +68,38 @@ class MyApp(QWidget):
 
         self.label_image.setPixmap(pixmap)
 
-
-
+    # 키 배열: B, NULL, SELECT, START, U, D, L, R, A
+    #env.step(np.array([0, 0, 0, 0, 0, 0, 0, 0, 0]))
 
     def keyPressEvent(self, event):
         key = event.key()
         if key == Qt.Key_Up:
+            self.press_buttons[4] = 1
+        elif key == Qt.Key_Down:
+            self.press_buttons[5] = 1
+        elif key == Qt.Key_Left:
+            self.press_buttons[6] = 1
+        elif key == Qt.Key_Right:
             self.press_buttons[7] = 1
+        elif key == Qt.Key_A:
+            self.press_buttons[8] = 1
+        elif key == Qt.Key_B:
+            self.press_buttons[0] = 1
 
     def keyReleaseEvent(self, event):
         key = event.key()
         if key == Qt.Key_Up:
+            self.press_buttons[4] = 0
+        elif key == Qt.Key_Down:
+            self.press_buttons[5] = 0
+        elif key == Qt.Key_Left:
+            self.press_buttons[6] = 0
+        elif key == Qt.Key_Right:
             self.press_buttons[7] = 0
+        elif key == Qt.Key_A:
+            self.press_buttons[8] = 0
+        elif key == Qt.Key_B:
+            self.press_buttons[0] = 0
 
 
 
