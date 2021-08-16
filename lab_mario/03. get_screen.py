@@ -27,7 +27,7 @@ class MyApp(QWidget):
         self.screen = self.env.get_screen()
 
         #창크기 조절
-        self.setFixedSize(int(self.screen.shape[0] * 2), int(2 * self.screen.shape[1]))
+        self.setFixedSize(1200, int(2 * self.screen.shape[1]))
         #창제목 설정
         self.setWindowTitle('GA Mario')
 
@@ -99,7 +99,7 @@ class MyApp(QWidget):
         elif key == Qt.Key_A:
             self.press_buttons[8] = 0
         elif key == Qt.Key_B:
-            self.press_buttons[0] = 0
+            self.press_buttons[0] = 00
 
 
 
