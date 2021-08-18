@@ -5,6 +5,8 @@ from PyQt5.QtGui import QImage, QPixmap
 from PyQt5.QtCore import Qt
 import numpy as np
 from PyQt5.QtCore import QTimer
+from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
+
 
 
 
@@ -42,6 +44,8 @@ class MyApp(QWidget):
         self.label_image.setPixmap(pixmap)
         self.label_image.setGeometry(0, 0, int(self.screen.shape[0] * 2), int(2 * self.screen.shape[1]))
 
+
+
         self.qtimer = QTimer(self)
         # 타이머에 호출할 함수 연결
         self.qtimer.timeout.connect(self.timer)
@@ -56,6 +60,30 @@ class MyApp(QWidget):
 
         #창 띄우기
         self.show()
+
+    def paintEvent(self, event):
+        # 그리기 도구
+        painter = QPainter()
+        # 그리기 시작
+        painter.begin(self)
+
+        # RGB 설정으로 펜 설정
+        painter.setPen(QPen(QColor.fromRgb(0, 0, 0), Qt.SolidLine))
+
+        # 브러쉬 설정(채우기)
+        painter.setBrush(QBrush(Qt.gray))
+
+        # 직사각형 그리기
+        for j in range(13):
+            for i in range(32):
+                x = 500 + 16 * i
+                y = 50 + 16 * j
+                painter.drawRect(x, y, 16, 16)  # 시작점 너비 높이
+
+
+
+        # 그리기 끝
+        painter.end()
 
     def timer(self):
         self.env.step(np.array(self.press_buttons))
