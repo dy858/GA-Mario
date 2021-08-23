@@ -26,6 +26,22 @@ class MyApp(QWidget):
         self.env = retro.make(game='SuperMarioBros-Nes', state='Level1-1')
         self.env.reset()
 
+        ram = self.env.get_ram()
+
+        # https://datacrystal.romhacking.net/wiki/Super_Mario_Bros.:RAM_map
+        # 0x0500-0x069F	Current tile (Does not effect graphics)
+        full_screen_tiles = ram[0x0500:0x069F + 1]
+
+        # print(full_screen_tiles.shape)
+        # print(full_screen_tiles)
+
+        full_screen_tile_count = full_screen_tiles.shape[0]
+
+        full_screen_page1_tile = full_screen_tiles[:full_screen_tile_count // 2].reshape((13, 16))
+        full_screen_page2_tile = full_screen_tiles[full_screen_tile_count // 2:].reshape((13, 16))
+
+        self.full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1).astype(np.int)
+
         self.screen = self.env.get_screen()
 
         #창크기 조절
@@ -62,6 +78,8 @@ class MyApp(QWidget):
         self.show()
 
     def paintEvent(self, event):
+
+
         # 그리기 도구
         painter = QPainter()
         # 그리기 시작
@@ -71,18 +89,27 @@ class MyApp(QWidget):
         painter.setPen(QPen(QColor.fromRgb(0, 0, 0), Qt.SolidLine))
 
         # 브러쉬 설정(채우기)
-        painter.setBrush(QBrush(Qt.gray))
+
+
+
 
         # 직사각형 그리기
         for j in range(13):
             for i in range(32):
                 x = 500 + 16 * i
                 y = 50 + 16 * j
-                painter.drawRect(x, y, 16, 16)  # 시작점 너비 높이
+                if self.full_screen_tiles[j][i] == 0:
+                    painter.setBrush(QBrush(Qt.gray))
+                    painter.drawRect(x, y, 16, 16)  # 시작점 너비 높이
+                else:
+                    painter.setBrush(QBrush(Qt.blue))
+                    painter.drawRect(x, y, 16, 16)
 
 
 
-        # 그리기 끝
+
+
+                    # 그리기 끝
         painter.end()
 
     def timer(self):
