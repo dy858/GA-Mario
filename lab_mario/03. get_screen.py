@@ -26,21 +26,7 @@ class MyApp(QWidget):
         self.env = retro.make(game='SuperMarioBros-Nes', state='Level1-1')
         self.env.reset()
 
-        ram = self.env.get_ram()
 
-        # https://datacrystal.romhacking.net/wiki/Super_Mario_Bros.:RAM_map
-        # 0x0500-0x069F	Current tile (Does not effect graphics)
-        full_screen_tiles = ram[0x0500:0x069F + 1]
-
-        # print(full_screen_tiles.shape)
-        # print(full_screen_tiles)
-
-        full_screen_tile_count = full_screen_tiles.shape[0]
-
-        full_screen_page1_tile = full_screen_tiles[:full_screen_tile_count // 2].reshape((13, 16))
-        full_screen_page2_tile = full_screen_tiles[full_screen_tile_count // 2:].reshape((13, 16))
-
-        self.full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1).astype(np.int)
 
         self.screen = self.env.get_screen()
 
@@ -79,6 +65,24 @@ class MyApp(QWidget):
 
     def paintEvent(self, event):
 
+        ram = self.env.get_ram()
+
+        # https://datacrystal.romhacking.net/wiki/Super_Mario_Bros.:RAM_map
+        # 0x0500-0x069F	Current tile (Does not effect graphics)
+        full_screen_tiles = ram[0x0500:0x069F + 1]
+
+        # print(full_screen_tiles.shape)
+        # print(full_screen_tiles)
+
+        full_screen_tile_count = full_screen_tiles.shape[0]
+
+        full_screen_page1_tile = full_screen_tiles[:full_screen_tile_count // 2].reshape((13, 16))
+        full_screen_page2_tile = full_screen_tiles[full_screen_tile_count // 2:].reshape((13, 16))
+
+        self.full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1).astype(np.int)
+
+        
+
 
         # 그리기 도구
         painter = QPainter()
@@ -97,13 +101,15 @@ class MyApp(QWidget):
         for j in range(13):
             for i in range(32):
                 x = 500 + 16 * i
-                y = 50 + 16 * j
+                y = 20 + 16 * j
                 if self.full_screen_tiles[j][i] == 0:
                     painter.setBrush(QBrush(Qt.gray))
                     painter.drawRect(x, y, 16, 16)  # 시작점 너비 높이
                 else:
                     painter.setBrush(QBrush(Qt.blue))
                     painter.drawRect(x, y, 16, 16)
+
+
 
 
 
@@ -122,6 +128,8 @@ class MyApp(QWidget):
         pixmap = pixmap.scaled(int(self.screen.shape[0] * 2), int(2 * self.screen.shape[1]), Qt.IgnoreAspectRatio)
 
         self.label_image.setPixmap(pixmap)
+
+        self.update()
 
     # 키 배열: B, NULL, SELECT, START, U, D, L, R, A
     #env.step(np.array([0, 0, 0, 0, 0, 0, 0, 0, 0]))
