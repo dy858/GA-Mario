@@ -14,3 +14,9 @@ player_position_y = ram[0x03B8]
 player_tile_position_x = (player_position_x + 8) // 16
 player_tile_position_y = (player_position_y + 8) // 16 - 1
 
+print(player_tile_position_x)
+print(player_tile_position_y)
+
+
+print(player_position_x)
+print(player_position_y)

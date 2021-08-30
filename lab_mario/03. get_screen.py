@@ -67,12 +67,8 @@ class MyApp(QWidget):
 
         ram = self.env.get_ram()
 
-        # https://datacrystal.romhacking.net/wiki/Super_Mario_Bros.:RAM_map
-        # 0x0500-0x069F	Current tile (Does not effect graphics)
-        full_screen_tiles = ram[0x0500:0x069F + 1]
 
-        # print(full_screen_tiles.shape)
-        # print(full_screen_tiles)
+        full_screen_tiles = ram[0x0500:0x069F + 1]
 
         full_screen_tile_count = full_screen_tiles.shape[0]
 
@@ -81,7 +77,7 @@ class MyApp(QWidget):
 
         self.full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1).astype(np.int)
 
-        
+
 
 
         # 그리기 도구
@@ -93,9 +89,6 @@ class MyApp(QWidget):
         painter.setPen(QPen(QColor.fromRgb(0, 0, 0), Qt.SolidLine))
 
         # 브러쉬 설정(채우기)
-
-
-
 
         # 직사각형 그리기
         for j in range(13):
@@ -110,12 +103,49 @@ class MyApp(QWidget):
                     painter.drawRect(x, y, 16, 16)
 
 
+        # 그리기 시작
+
+        # RGB 설정으로 펜 설정
+
+        current_screen_page = ram[0x071A]
+        # 0x071C	ScreenEdge X-Position, loads next screen when player past it?
+        # 페이지 속 현재 화면 위치
+        screen_position = ram[0x071C]
+        # 화면 오프셋
+        screen_offset = (256 * current_screen_page + screen_position) % 512
+        # 타일 화면 오프셋
+        screen_tile_offset = screen_offset // 16
+
+        # 현재 화면 추출
+        screen_tiles = np.concatenate((self.full_screen_tiles, self.full_screen_tiles), axis=1)[:,
+                       screen_tile_offset:screen_tile_offset + 16]
+
+        player_position_x = ram[0x03AD]
+        player_position_y = ram[0x03B8]
+
+        # 타일 좌표로 변환
+        player_tile_position_x = (player_position_x + 8) // 16
+        player_tile_position_y = (player_position_y + 8) // 16 - 1
+
+        for j in range(13):
+            for i in range(16):
+                x = 500 + 16 * i
+                y = 250 + 16 * j
+                if screen_tiles[j][i] == 0:
+                    painter.setBrush(QBrush(Qt.gray))
+                    painter.drawRect(x, y, 16, 16)  # 시작점 너비 높이
+                elif :
+                    painter.setBrush(QBrush(Qt.Blue))
+                    painter.drawRect(x, y, 16, 16)
+                else:
+                    painter.setBrush(QBrush(Qt.darkBlue))
+                    painter.drawRect(x, y, 16, 16)
 
 
 
 
 
-                    # 그리기 끝
+
         painter.end()
 
     def timer(self):
