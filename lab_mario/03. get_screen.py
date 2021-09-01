@@ -131,15 +131,22 @@ class MyApp(QWidget):
             for i in range(16):
                 x = 500 + 16 * i
                 y = 250 + 16 * j
+                  # 시작점 너비 높이
+
                 if screen_tiles[j][i] == 0:
                     painter.setBrush(QBrush(Qt.gray))
-                    painter.drawRect(x, y, 16, 16)  # 시작점 너비 높이
-                elif :
+                    painter.drawRect(x, y, 16, 16)
+                    
+                elif j == player_tile_position_x  and i == player_tile_position_y:
                     painter.setBrush(QBrush(Qt.Blue))
                     painter.drawRect(x, y, 16, 16)
+
                 else:
                     painter.setBrush(QBrush(Qt.darkBlue))
                     painter.drawRect(x, y, 16, 16)
+
+
+
 
 
 
