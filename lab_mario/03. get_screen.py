@@ -65,6 +65,7 @@ class MyApp(QWidget):
 
     def paintEvent(self, event):
 
+        #램 정보
         ram = self.env.get_ram()
 
 
@@ -76,8 +77,6 @@ class MyApp(QWidget):
         full_screen_page2_tile = full_screen_tiles[full_screen_tile_count // 2:].reshape((13, 16))
 
         self.full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1).astype(np.int)
-
-
 
 
         # 그리기 도구
@@ -103,9 +102,6 @@ class MyApp(QWidget):
                     painter.drawRect(x, y, 16, 16)
 
 
-        # 그리기 시작
-
-        # RGB 설정으로 펜 설정
 
         current_screen_page = ram[0x071A]
         # 0x071C	ScreenEdge X-Position, loads next screen when player past it?
@@ -120,12 +116,14 @@ class MyApp(QWidget):
         screen_tiles = np.concatenate((self.full_screen_tiles, self.full_screen_tiles), axis=1)[:,
                        screen_tile_offset:screen_tile_offset + 16]
 
+        #플레이어 현재 위치
         player_position_x = ram[0x03AD]
         player_position_y = ram[0x03B8]
 
         # 타일 좌표로 변환
         player_tile_position_x = (player_position_x + 8) // 16
         player_tile_position_y = (player_position_y + 8) // 16 - 1
+
 
         for j in range(13):
             for i in range(16):
@@ -136,14 +134,70 @@ class MyApp(QWidget):
                 if screen_tiles[j][i] == 0:
                     painter.setBrush(QBrush(Qt.gray))
                     painter.drawRect(x, y, 16, 16)
-                    
-                elif j == player_tile_position_x  and i == player_tile_position_y:
-                    painter.setBrush(QBrush(Qt.Blue))
+
+                elif j == player_tile_position_y and i == player_tile_position_x:
+                    painter.setBrush(QBrush(Qt.red))
                     painter.drawRect(x, y, 16, 16)
+
 
                 else:
                     painter.setBrush(QBrush(Qt.darkBlue))
                     painter.drawRect(x, y, 16, 16)
+
+        for j in range(13):
+            for i in range(16):
+                x = 500 + 16 * i
+                y = 250 + 16 * j
+                if j == player_tile_position_y and i == player_tile_position_x:
+                    painter.setBrush(QBrush(Qt.blue))
+                    painter.drawRect(x, y, 16, 16)
+                else:
+                    pass
+
+
+
+        enemy_drawn = ram[0x000F:0x0013 + 1]
+
+        enemy_horizon_position = ram[0x006E:0x0072 + 1]
+        # 자신이 속한 페이지 속 x좌표
+        enemy_screen_position_x = ram[0x0087:0x008B + 1]
+
+        enemy_position_y = ram[0x00CF:0x00D3 + 1]
+
+        enemy_position_x = (enemy_horizon_position * 256 + enemy_screen_position_x) % 512
+
+        enemy_tile_position_x = (enemy_position_x + 8) // 16
+        enemy_tile_position_y = (enemy_position_y - 8) // 16 - 1
+
+
+        for k in range(5):
+            if enemy_drawn[k] == 1:
+                for j in range(13):
+                    for i in range(32):
+                        x = 500 + 16 * i
+                        y = 20 + 16 * j
+                        if j == enemy_tile_position_y[k] and i == enemy_tile_position_x[k]:
+                            painter.setBrush(QBrush(Qt.red))
+                            painter.drawRect(x, y, 16, 16)
+                        else:
+                            pass
+
+            else:
+                pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -166,7 +220,11 @@ class MyApp(QWidget):
 
         self.label_image.setPixmap(pixmap)
 
+
         self.update()
+
+
+
 
     # 키 배열: B, NULL, SELECT, START, U, D, L, R, A
     #env.step(np.array([0, 0, 0, 0, 0, 0, 0, 0, 0]))
