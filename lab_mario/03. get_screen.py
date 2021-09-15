@@ -78,6 +78,19 @@ class MyApp(QWidget):
 
         self.full_screen_tiles = np.concatenate((full_screen_page1_tile, full_screen_page2_tile), axis=1).astype(np.int)
 
+        enemy_drawn = ram[0x000F:0x0013 + 1]
+
+        enemy_horizon_position = ram[0x006E:0x0072 + 1]
+        # 자신이 속한 페이지 속 x좌표
+        enemy_screen_position_x = ram[0x0087:0x008B + 1]
+
+        enemy_position_y = ram[0x00CF:0x00D3 + 1]
+
+        enemy_position_x = (enemy_horizon_position * 256 + enemy_screen_position_x) % 512
+
+        enemy_tile_position_x = (enemy_position_x + 8) // 16
+        enemy_tile_position_y = (enemy_position_y - 8) // 16 - 1
+
 
         # 그리기 도구
         painter = QPainter()
@@ -156,18 +169,7 @@ class MyApp(QWidget):
 
 
 
-        enemy_drawn = ram[0x000F:0x0013 + 1]
 
-        enemy_horizon_position = ram[0x006E:0x0072 + 1]
-        # 자신이 속한 페이지 속 x좌표
-        enemy_screen_position_x = ram[0x0087:0x008B + 1]
-
-        enemy_position_y = ram[0x00CF:0x00D3 + 1]
-
-        enemy_position_x = (enemy_horizon_position * 256 + enemy_screen_position_x) % 512
-
-        enemy_tile_position_x = (enemy_position_x + 8) // 16
-        enemy_tile_position_y = (enemy_position_y - 8) // 16 - 1
 
 
         for k in range(5):
