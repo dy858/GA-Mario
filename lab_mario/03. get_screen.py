@@ -7,7 +7,8 @@ import numpy as np
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPainter, QPen, QBrush, QColor
 
-
+#보고서
+#하게 된 계기, 과정, 느낀점
 
 
 
@@ -91,6 +92,27 @@ class MyApp(QWidget):
         enemy_tile_position_x = (enemy_position_x + 8) // 16
         enemy_tile_position_y = (enemy_position_y - 8) // 16 - 1
 
+        current_screen_page = ram[0x071A]
+        # 0x071C	ScreenEdge X-Position, loads next screen when player past it?
+        # 페이지 속 현재 화면 위치
+        screen_position = ram[0x071C]
+        # 화면 오프셋
+        screen_offset = (256 * current_screen_page + screen_position) % 512
+        # 타일 화면 오프셋
+        screen_tile_offset = screen_offset // 16
+
+        # 현재 화면 추출
+        screen_tiles = np.concatenate((self.full_screen_tiles, self.full_screen_tiles), axis=1)[:,
+                       screen_tile_offset:screen_tile_offset + 16]
+
+        # 플레이어 현재 위치
+        player_position_x = ram[0x03AD]
+        player_position_y = ram[0x03B8]
+
+        # 타일 좌표로 변환
+        player_tile_position_x = (player_position_x + 8) // 16
+        player_tile_position_y = (player_position_y + 8) // 16 - 1
+
 
         # 그리기 도구
         painter = QPainter()
@@ -116,26 +138,7 @@ class MyApp(QWidget):
 
 
 
-        current_screen_page = ram[0x071A]
-        # 0x071C	ScreenEdge X-Position, loads next screen when player past it?
-        # 페이지 속 현재 화면 위치
-        screen_position = ram[0x071C]
-        # 화면 오프셋
-        screen_offset = (256 * current_screen_page + screen_position) % 512
-        # 타일 화면 오프셋
-        screen_tile_offset = screen_offset // 16
 
-        # 현재 화면 추출
-        screen_tiles = np.concatenate((self.full_screen_tiles, self.full_screen_tiles), axis=1)[:,
-                       screen_tile_offset:screen_tile_offset + 16]
-
-        #플레이어 현재 위치
-        player_position_x = ram[0x03AD]
-        player_position_y = ram[0x03B8]
-
-        # 타일 좌표로 변환
-        player_tile_position_x = (player_position_x + 8) // 16
-        player_tile_position_y = (player_position_y + 8) // 16 - 1
 
 
         for j in range(13):
@@ -159,8 +162,10 @@ class MyApp(QWidget):
                 if j == player_tile_position_y and i == player_tile_position_x:
                     painter.setBrush(QBrush(Qt.blue))
                     painter.drawRect(x, y, 16, 16)
+
                 else:
                     pass
+
 
 
         for k in range(5):
@@ -177,16 +182,6 @@ class MyApp(QWidget):
 
             else:
                 pass
-
-
-
-
-
-
-
-
-
-
 
 
 

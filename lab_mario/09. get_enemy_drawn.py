@@ -7,4 +7,4 @@ ram = env.get_ram()
 
 enemy_drawn = ram[0x000F:0x0013+1]
 
-print(enemy_drawn[1])
+print(enemy_drawn)
